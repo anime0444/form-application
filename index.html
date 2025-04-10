@@ -37,11 +37,9 @@
   <button onclick="toggleForm('signup')">اشتراك</button>
   <button onclick="toggleForm('login')">تسجيل الدخول</button>  <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
     <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="signupPin" placeholder="كلمة السر (4 أرقام)" required>
     <button type="submit">إنشاء الحساب</button>
   </form>  <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
     <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="loginPin" placeholder="كلمة السر (4 أرقام)" required>
     <button type="submit">دخول</button>
   </form>  <div id="wallet">
     <h3>تم تسجيل الدخول</h3>
@@ -59,16 +57,15 @@
     function handleSubmit(event, action) {
       event.preventDefault();
       const phone = document.getElementById(action + "Phone").value.trim();
-      const pin = document.getElementById(action + "Pin").value.trim();
 
-      if (pin.length !== 4 || isNaN(pin)) {
-        alert("الرجاء إدخال كود مكون من 4 أرقام فقط");
+      if (phone.length < 6) {
+        alert("يرجى إدخال رقم هاتف صحيح");
         return;
       }
 
       fetch(webAppUrl, {
         method: "POST",
-        body: JSON.stringify({ phone, pin, action }),
+        body: JSON.stringify({ phone, pin: "0000", action }), // pin ثابت فقط لتوافق الكود
         headers: { "Content-Type": "application/json" }
       })
       .then(res => res.text())
