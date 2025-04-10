@@ -2,91 +2,60 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>محفظتي</title>
+  <title>محفظتك</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
+      font-family: sans-serif;
+      background: #f9f9f9;
       text-align: center;
+      padding-top: 100px;
     }
     input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
+      padding: 10px;
       font-size: 16px;
-      border-radius: 6px;
+      margin: 10px;
+      width: 250px;
+      border-radius: 5px;
       border: 1px solid #ccc;
     }
     button {
-      background-color: #28a745;
+      background: #28a745;
       color: white;
       border: none;
     }
-    button:hover {
-      background-color: #218838;
-    }
-    #wallet {
-      display: none;
+    #result {
       margin-top: 20px;
-      text-align: right;
+      font-size: 18px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>محفظتك</h2>
-    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-    <button onclick="accessWallet()">دخول / إنشاء حساب</button>
 
-    <div id="wallet">
-      <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
-      <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
-    </div>
-  </div>
+  <h2>مرحباً بك في محفظتك</h2>
+  <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
+  <br>
+  <button onclick="login()">دخول</button>
+
+  <div id="result"></div>
 
   <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwx_gBapxlyv3GFUtdJpteu1PQFfrkBXx9V6CZYDgL42ijiuRRFizjuRLSlxoUpW_CC/exec";
+    const url = "https://script.google.com/macros/s/AKfycbwx_gBapxlyv3GFUtdJpteu1PQFfrkBXx9V6CZYDgL42ijiuRRFizjuRLSlxoUpW_CC/exec";
 
-    function accessWallet() {
+    function login() {
       const phone = document.getElementById("phone").value.trim();
-      if (!phone) {
-        alert("يرجى إدخال رقم الهاتف");
-        return;
-      }
+      if (!phone) return alert("يرجى إدخال رقم الهاتف");
 
-      fetch(webAppUrl, {
+      fetch(url, {
         method: "POST",
-        body: JSON.stringify({ phone }),
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone })
       })
-      .then(response => response.text())
-      .then(text => {
-        const matchPhone = text.match(/رقمك: (.+)/);
-        const matchBalance = text.match(/رصيدك: (.+) د/);
-
-        if (matchPhone && matchBalance) {
-          document.getElementById("walletPhone").innerText = matchPhone[1];
-          document.getElementById("walletBalance").innerText = matchBalance[1];
-          document.getElementById("wallet").style.display = "block";
-        } else {
-          alert(text);
-        }
-      })
-      .catch(error => alert("حدث خطأ: " + error));
+      .then(res => res.text())
+      .then(data => document.getElementById("result").innerText = data)
+      .catch(err => alert("حدث خطأ: " + err));
     }
   </script>
+
 </body>
 </html>
