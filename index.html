@@ -1,111 +1,67 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <title>محفظتي</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
+      background-color: #f2f2f2;
       text-align: center;
+      padding: 40px;
     }
-    button, input {
+    input, button {
       padding: 10px;
-      margin: 10px;
-      width: 200px;
       font-size: 16px;
-    }
-    form {
-      margin-top: 20px;
-      display: none;
+      margin: 10px;
+      width: 250px;
     }
     #wallet {
       display: none;
-      background-color: white;
+      background-color: #fff;
       padding: 20px;
-      margin-top: 30px;
-      border-radius: 8px;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <h2>مرحباً بك في محفظتك</h2>
-  <button onclick="toggleForm('signup')">اشتراك</button>
-  <button onclick="toggleForm('login')">تسجيل الدخول</button>
-
-  <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
-    <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="signupPin" placeholder="PIN مكون من 4 أرقام" required>
-    <button type="submit">إنشاء الحساب</button>
-  </form>
-
-  <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
-    <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="loginPin" placeholder="PIN مكون من 4 أرقام" required>
-    <button type="submit">دخول</button>
-  </form>
-
-  <div id="wallet">
-    <h3>تم تسجيل الدخول</h3>
+  <h2>محفظتك الإلكترونية</h2>
+  <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
+  <br>
+  <button onclick="accessWallet()">دخول / إنشاء حساب</button>  <div id="wallet">
+    <h3>تم الدخول بنجاح</h3>
     <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
     <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
-  </div>
+  </div>  <script>
+    const webAppUrl = "https://script.google.com/macros/s/AKfycby5KCoulaF6dsMJNx7qz5P53BqvsZJu1_l8VtcFFNPxYoa7wvM_H-SewUBk8ZKMdtOj-A/exec";
 
-  <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzwmA42isHw6xX5FPJEputpUbxbMG9qYvt9CXgku66lp51gzdEydw70i25OB41w3wh8nA/exec";
-
-    function toggleForm(type) {
-      document.getElementById("signupForm").style.display = (type === 'signup') ? 'block' : 'none';
-      document.getElementById("loginForm").style.display = (type === 'login') ? 'block' : 'none';
-      document.getElementById("wallet").style.display = 'none';
-    }
-
-    function handleSubmit(event, action) {
-      event.preventDefault();
-      const phone = document.getElementById(action + "Phone").value.trim();
-      const pin = document.getElementById(action + "Pin").value.trim();
-
-      if (!phone || !/^\d+$/.test(phone)) {
-        alert("يرجى إدخال رقم هاتف صحيح يتكون من أرقام فقط");
-        return;
-      }
-      
-      if (!pin || !/^\d{4}$/.test(pin)) {
-        alert("يرجى إدخال PIN مكون من 4 أرقام");
+    function accessWallet() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) {
+        alert("يرجى إدخال رقم الهاتف");
         return;
       }
 
       fetch(webAppUrl, {
         method: "POST",
-        body: JSON.stringify({ phone, pin, action }),
+        body: JSON.stringify({ phone }),
         headers: { "Content-Type": "application/json" }
       })
       .then(res => res.text())
       .then(response => {
-        if (action === "login" && response.includes("مرحباً")) {
-          const matchPhone = response.match(/رقمك: (.+)/);
-          const matchBalance = response.match(/رصيدك: (.+) د/);
-          if (matchPhone && matchBalance) {
-            document.getElementById("walletPhone").innerText = matchPhone[1];
-            document.getElementById("walletBalance").innerText = matchBalance[1];
-            document.getElementById("signupForm").style.display = "none";
-            document.getElementById("loginForm").style.display = "none";
-            document.getElementById("wallet").style.display = "block";
-          }
-        } else if (action === "signup" && response.includes("تم إنشاء الحساب بنجاح")) {
-          alert("تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.");
-          toggleForm('login');
+        const phoneMatch = response.match(/رقمك: (.+)/);
+        const balanceMatch = response.match(/رصيدك: (.+) د/);
+
+        if (phoneMatch && balanceMatch) {
+          document.getElementById("walletPhone").innerText = phoneMatch[1];
+          document.getElementById("walletBalance").innerText = balanceMatch[1];
+          document.getElementById("wallet").style.display = "block";
         } else {
           alert(response);
         }
       })
-      .catch(error => alert("حدث خطأ: " + error));
+      .catch(err => alert("حدث خطأ: " + err));
     }
-  </script>
-</body>
+  </script></body>
 </html>
