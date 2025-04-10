@@ -1,45 +1,68 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <title>محفظتي</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #eef2f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       text-align: center;
-      padding: 40px;
+      width: 300px;
+    }
+    h2 {
+      margin-bottom: 20px;
     }
     input, button {
-      padding: 10px;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
       font-size: 16px;
-      margin: 10px;
-      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
     #wallet {
       display: none;
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 30px;
+      margin-top: 20px;
+    }
+    .info {
+      text-align: right;
+      direction: rtl;
     }
   </style>
 </head>
 <body>
-  <h2>محفظتك الإلكترونية</h2>
+  <div class="card">
+    <h2>محفظتك الإلكترونية</h2>
+    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
+    <button onclick="accessWallet()">دخول / إنشاء حساب</button><div id="wallet" class="info">
+  <h3>تم الدخول بنجاح</h3>
+  <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
+  <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
+</div>
 
-  <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-  <br>
-  <button onclick="accessWallet()">دخول / إنشاء حساب</button>
-
-  <div id="wallet">
-    <h3>تم الدخول بنجاح</h3>
-    <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
-    <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
-  </div>
-
-  <script>
+  </div>  <script>
     const webAppUrl = "https://script.google.com/macros/s/AKfycbxa8dUyIvERT931wkUUij-K4h7J2AcSe7FN4pQqWdcEKgECkzOrWIr74uho-FS1TLs/exec";
 
     function accessWallet() {
@@ -69,6 +92,5 @@
       })
       .catch(err => alert("حدث خطأ: " + err));
     }
-  </script>
-</body>
+  </script></body>
 </html>
