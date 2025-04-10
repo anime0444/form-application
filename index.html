@@ -4,74 +4,64 @@
   <title>محفظتي</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
       padding: 20px;
       text-align: center;
     }
-    button {
+    button, input {
+      padding: 10px;
       margin: 10px;
-      padding: 10px 20px;
-      cursor: pointer;
+      width: 200px;
+      font-size: 16px;
     }
     form {
-      display: none;
       margin-top: 20px;
-    }
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 8px;
-      width: 200px;
+      display: none;
     }
     #wallet {
       display: none;
-      background: white;
+      background-color: white;
       padding: 20px;
-      border-radius: 10px;
+      margin-top: 30px;
+      border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 20px;
       width: 300px;
       margin-left: auto;
       margin-right: auto;
-    }
-    #wallet h3 {
-      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <h2>مرحباً بك في محفظتك</h2>
-  <button onclick="showForm('signup')">اشتراك</button>
-  <button onclick="showForm('login')">تسجيل الدخول</button>  <form id="signupForm" onsubmit="submitForm(event, 'signup')">
+  <button onclick="toggleForm('signup')">اشتراك</button>
+  <button onclick="toggleForm('login')">تسجيل الدخول</button>  <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
     <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
     <input type="password" id="signupPin" placeholder="كلمة السر (4 أرقام)" required>
-    <button type="submit">إنشاء حساب</button>
-  </form>  <form id="loginForm" onsubmit="submitForm(event, 'login')">
+    <button type="submit">إنشاء الحساب</button>
+  </form>  <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
     <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
     <input type="password" id="loginPin" placeholder="كلمة السر (4 أرقام)" required>
     <button type="submit">دخول</button>
   </form>  <div id="wallet">
-    <h3>مرحباً!</h3>
+    <h3>تم تسجيل الدخول</h3>
     <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
     <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
   </div>  <script>
     const webAppUrl = "https://script.google.com/macros/s/AKfycbzwmA42isHw6xX5FPJEputpUbxbMG9qYvt9CXgku66lp51gzdEydw70i25OB41w3wh8nA/exec";
 
-    function showForm(formType) {
-      document.getElementById('signupForm').style.display = (formType === 'signup') ? 'block' : 'none';
-      document.getElementById('loginForm').style.display = (formType === 'login') ? 'block' : 'none';
-      document.getElementById('wallet').style.display = 'none';
+    function toggleForm(type) {
+      document.getElementById("signupForm").style.display = (type === 'signup') ? 'block' : 'none';
+      document.getElementById("loginForm").style.display = (type === 'login') ? 'block' : 'none';
+      document.getElementById("wallet").style.display = 'none';
     }
 
-    function submitForm(event, action) {
+    function handleSubmit(event, action) {
       event.preventDefault();
+      const phone = document.getElementById(action + "Phone").value.trim();
+      const pin = document.getElementById(action + "Pin").value.trim();
 
-      const phone = document.getElementById(action + 'Phone').value.trim();
-      const pin = document.getElementById(action + 'Pin').value.trim();
-
-      // التحقق من أن الكود يحتوي على 4 أرقام فقط
-      if (!/^\d{4}$/.test(pin)) {
+      if (pin.length !== 4 || isNaN(pin)) {
         alert("الرجاء إدخال كود مكون من 4 أرقام فقط");
         return;
       }
@@ -82,23 +72,22 @@
         headers: { "Content-Type": "application/json" }
       })
       .then(res => res.text())
-      .then(txt => {
-        if (action === 'login' && txt.includes('مرحباً')) {
-          const matchPhone = txt.match(/رقمك: (.+)/);
-          const matchBalance = txt.match(/رصيدك: (.+) د/);
-
+      .then(response => {
+        if (action === "login" && response.includes("مرحباً")) {
+          const matchPhone = response.match(/رقمك: (.+)/);
+          const matchBalance = response.match(/رصيدك: (.+) د/);
           if (matchPhone && matchBalance) {
             document.getElementById("walletPhone").innerText = matchPhone[1];
             document.getElementById("walletBalance").innerText = matchBalance[1];
-            document.getElementById("signupForm").style.display = 'none';
-            document.getElementById("loginForm").style.display = 'none';
-            document.getElementById("wallet").style.display = 'block';
+            document.getElementById("signupForm").style.display = "none";
+            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("wallet").style.display = "block";
           }
         } else {
-          alert(txt);
+          alert(response);
         }
       })
-      .catch(err => alert("حدث خطأ: " + err));
+      .catch(error => alert("حدث خطأ: " + error));
     }
   </script></body>
 </html>
