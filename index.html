@@ -2,20 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>محفظتك</title>
+  <title>محفظتي</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #f9f9f9;
-      text-align: center;
-      padding-top: 100px;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h2 {
+      margin-bottom: 20px;
     }
     input, button {
       padding: 10px;
       font-size: 16px;
-      margin: 10px;
+      margin: 5px;
       width: 250px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: 1px solid #ccc;
     }
     button {
@@ -25,8 +31,9 @@
     }
     #result {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 16px;
       color: #333;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -34,26 +41,32 @@
 
   <h2>مرحباً بك في محفظتك</h2>
   <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-  <br>
-  <button onclick="login()">دخول</button>
+  <button onclick="checkWallet()">دخول / إنشاء حساب</button>
 
   <div id="result"></div>
 
   <script>
-    const url = "https://script.google.com/macros/s/AKfycbwx_gBapxlyv3GFUtdJpteu1PQFfrkBXx9V6CZYDgL42ijiuRRFizjuRLSlxoUpW_CC/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzBEC5BYf2X_LYtyFYFBgPcALKVwRX-Jr-MjoGKkZD5wK6VxH-otkjszuBaRWYyV2eZ/exec";
 
-    function login() {
+    function checkWallet() {
       const phone = document.getElementById("phone").value.trim();
-      if (!phone) return alert("يرجى إدخال رقم الهاتف");
+      if (!phone) {
+        alert("يرجى إدخال رقم الهاتف");
+        return;
+      }
 
-      fetch(url, {
+      fetch(scriptURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone })
       })
-      .then(res => res.text())
-      .then(data => document.getElementById("result").innerText = data)
-      .catch(err => alert("حدث خطأ: " + err));
+      .then(response => response.text())
+      .then(text => {
+        document.getElementById("result").innerText = text;
+      })
+      .catch(err => {
+        document.getElementById("result").innerText = "حدث خطأ: " + err;
+      });
     }
   </script>
 
