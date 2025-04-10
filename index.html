@@ -45,11 +45,11 @@
   <button onclick="showForm('signup')">اشتراك</button>
   <button onclick="showForm('login')">تسجيل الدخول</button>  <form id="signupForm" onsubmit="submitForm(event, 'signup')">
     <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="signupPin" placeholder="كلمة السر (4 أرقام)" pattern="\\d{4}" required>
+    <input type="password" id="signupPin" placeholder="كلمة السر (4 أرقام)" required>
     <button type="submit">إنشاء حساب</button>
   </form>  <form id="loginForm" onsubmit="submitForm(event, 'login')">
     <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
-    <input type="password" id="loginPin" placeholder="كلمة السر (4 أرقام)" pattern="\\d{4}" required>
+    <input type="password" id="loginPin" placeholder="كلمة السر (4 أرقام)" required>
     <button type="submit">دخول</button>
   </form>  <div id="wallet">
     <h3>مرحباً!</h3>
@@ -69,6 +69,12 @@
 
       const phone = document.getElementById(action + 'Phone').value.trim();
       const pin = document.getElementById(action + 'Pin').value.trim();
+
+      // التحقق من أن الكود يحتوي على 4 أرقام فقط
+      if (!/^\d{4}$/.test(pin)) {
+        alert("الرجاء إدخال كود مكون من 4 أرقام فقط");
+        return;
+      }
 
       fetch(webAppUrl, {
         method: "POST",
