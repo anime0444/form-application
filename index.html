@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <title>محفظتي</title>
@@ -35,18 +36,26 @@
 <body>
   <h2>مرحباً بك في محفظتك</h2>
   <button onclick="toggleForm('signup')">اشتراك</button>
-  <button onclick="toggleForm('login')">تسجيل الدخول</button>  <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
+  <button onclick="toggleForm('login')">تسجيل الدخول</button>
+
+  <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
     <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
     <button type="submit">إنشاء الحساب</button>
-  </form>  <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
+  </form>
+
+  <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
     <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
     <button type="submit">دخول</button>
-  </form>  <div id="wallet">
+  </form>
+
+  <div id="wallet">
     <h3>تم تسجيل الدخول</h3>
     <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
     <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
-  </div>  <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzwmA42isHw6xX5FPJEputpUbxbMG9qYvt9CXgku66lp51gzdEydw70i25OB41w3wh8nA/exec";
+  </div>
+
+  <script>
+    const webAppUrl = "https://script.google.com/macros/s/الرابط_الجديد/exec";
 
     function toggleForm(type) {
       document.getElementById("signupForm").style.display = (type === 'signup') ? 'block' : 'none';
@@ -86,5 +95,6 @@
       })
       .catch(error => alert("حدث خطأ: " + error));
     }
-  </script></body>
+  </script>
+</body>
 </html>
