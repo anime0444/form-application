@@ -40,11 +40,13 @@
 
   <form id="signupForm" onsubmit="handleSubmit(event, 'signup')">
     <input type="text" id="signupPhone" placeholder="رقم الهاتف" required>
+    <input type="password" id="signupPin" placeholder="PIN مكون من 4 أرقام" required>
     <button type="submit">إنشاء الحساب</button>
   </form>
 
   <form id="loginForm" onsubmit="handleSubmit(event, 'login')">
     <input type="text" id="loginPhone" placeholder="رقم الهاتف" required>
+    <input type="password" id="loginPin" placeholder="PIN مكون من 4 أرقام" required>
     <button type="submit">دخول</button>
   </form>
 
@@ -55,7 +57,7 @@
   </div>
 
   <script>
-    const webAppUrl = "https://script.google.com/macros/s/الرابط_الجديد/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbzwmA42isHw6xX5FPJEputpUbxbMG9qYvt9CXgku66lp51gzdEydw70i25OB41w3wh8nA/exec";
 
     function toggleForm(type) {
       document.getElementById("signupForm").style.display = (type === 'signup') ? 'block' : 'none';
@@ -66,15 +68,21 @@
     function handleSubmit(event, action) {
       event.preventDefault();
       const phone = document.getElementById(action + "Phone").value.trim();
+      const pin = document.getElementById(action + "Pin").value.trim();
 
-      if (phone.length < 6) {
-        alert("يرجى إدخال رقم هاتف صحيح");
+      if (!phone || !/^\d+$/.test(phone)) {
+        alert("يرجى إدخال رقم هاتف صحيح يتكون من أرقام فقط");
+        return;
+      }
+      
+      if (!pin || !/^\d{4}$/.test(pin)) {
+        alert("يرجى إدخال PIN مكون من 4 أرقام");
         return;
       }
 
       fetch(webAppUrl, {
         method: "POST",
-        body: JSON.stringify({ phone, pin: "0000", action }), // pin ثابت فقط لتوافق الكود
+        body: JSON.stringify({ phone, pin, action }),
         headers: { "Content-Type": "application/json" }
       })
       .then(res => res.text())
@@ -89,6 +97,9 @@
             document.getElementById("loginForm").style.display = "none";
             document.getElementById("wallet").style.display = "block";
           }
+        } else if (action === "signup" && response.includes("تم إنشاء الحساب بنجاح")) {
+          alert("تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.");
+          toggleForm('login');
         } else {
           alert(response);
         }
