@@ -1,23 +1,92 @@
-const SPREADSHEET_ID = "1JWUk3vMzSG5BAljxRI8C5e0rhDsrUYuv0347YAcQABQ"; // هذا هو معرف Google Sheets
-const SHEET_NAME = "BNM"; // اسم الورقة كما في الصورة
-
-function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
-  const phone = data.phone;
-
-  if (!phone) {
-    return ContentService.createTextOutput("رقم الهاتف مفقود");
-  }
-
-  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
-  const rows = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] == phone) {
-      return ContentService.createTextOutput("مرحباً\nرقمك: " + phone + "\nرصيدك: " + rows[i][1] + " د");
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>محفظتي</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-  }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #wallet {
+      display: none;
+      margin-top: 20px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>محفظتك</h2>
+    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
+    <button onclick="accessWallet()">دخول / إنشاء حساب</button>
 
-  sheet.appendRow([phone, 0]);
-  return ContentService.createTextOutput("تم إنشاء حساب جديد\nرقمك: " + phone + "\nرصيدك: 0 د");
-}
+    <div id="wallet">
+      <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
+      <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
+    </div>
+  </div>
+
+  <script>
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbx3VGueGhd0J5_UuI2Ei_yDOsAbx1khY3WrlTmmiZRBsnz9zsBKIs866V1n6QSI4gRZ/exec";
+
+    function accessWallet() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) {
+        alert("يرجى إدخال رقم الهاتف");
+        return;
+      }
+
+      fetch(webAppUrl, {
+        method: "POST",
+        body: JSON.stringify({ phone }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(response => response.text())
+      .then(text => {
+        const matchPhone = text.match(/رقمك: (.+)/);
+        const matchBalance = text.match(/رصيدك: (.+) د/);
+
+        if (matchPhone && matchBalance) {
+          document.getElementById("walletPhone").innerText = matchPhone[1];
+          document.getElementById("walletBalance").innerText = matchBalance[1];
+          document.getElementById("wallet").style.display = "block";
+        } else {
+          alert(text);
+        }
+      })
+      .catch(error => alert("حدث خطأ: " + error));
+    }
+  </script>
+</body>
+</html>
