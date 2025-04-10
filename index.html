@@ -1,98 +1,23 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>محفظتي</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #eef2f3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
-      width: 300px;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #wallet {
-      display: none;
-      margin-top: 20px;
-      text-align: right;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>محفظتك الإلكترونية</h2>
-    <input type="text" id="phone" placeholder="أدخل رقم الهاتف">
-    <button onclick="accessWallet()">دخول / إنشاء حساب</button>
+const SPREADSHEET_ID = "1JWUk3vMzSG5BAljxRI8C5e0rhDsrUYuv0347YAcQABQ"; // هذا هو معرف Google Sheets
+const SHEET_NAME = "BNM"; // اسم الورقة كما في الصورة
 
-    <div id="wallet">
-      <h3>تم الدخول بنجاح</h3>
-      <p><strong>رقم الهاتف:</strong> <span id="walletPhone"></span></p>
-      <p><strong>الرصيد:</strong> <span id="walletBalance"></span> د</p>
-    </div>
-  </div>
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const phone = data.phone;
 
-  <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbxW0UvzO0l38fXc-TF_Fca2vb5s3u8IAPV6I3DDRuCsJUkamnpDAqwYh7ZM0YVfeSWW/exec";
+  if (!phone) {
+    return ContentService.createTextOutput("رقم الهاتف مفقود");
+  }
 
-    function accessWallet() {
-      const phone = document.getElementById("phone").value.trim();
-      if (!phone) {
-        alert("يرجى إدخال رقم الهاتف");
-        return;
-      }
+  const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+  const rows = sheet.getDataRange().getValues();
 
-      fetch(webAppUrl, {
-        method: "POST",
-        body: JSON.stringify({ phone }),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.text())
-      .then(response => {
-        const phoneMatch = response.match(/رقمك: (.+)/);
-        const balanceMatch = response.match(/رصيدك: (.+) د/);
-
-        if (phoneMatch && balanceMatch) {
-          document.getElementById("walletPhone").innerText = phoneMatch[1];
-          document.getElementById("walletBalance").innerText = balanceMatch[1];
-          document.getElementById("wallet").style.display = "block";
-        } else {
-          alert(response);
-        }
-      })
-      .catch(err => alert("حدث خطأ: " + err));
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i][0] == phone) {
+      return ContentService.createTextOutput("مرحباً\nرقمك: " + phone + "\nرصيدك: " + rows[i][1] + " د");
     }
-  </script>
-</body>
-</html>
+  }
+
+  sheet.appendRow([phone, 0]);
+  return ContentService.createTextOutput("تم إنشاء حساب جديد\nرقمك: " + phone + "\nرصيدك: 0 د");
+}
