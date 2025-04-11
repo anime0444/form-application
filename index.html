@@ -8,22 +8,26 @@
       font-family: Tahoma, sans-serif;
       background-color: #f4f4f4;
       padding: 20px;
-      direction: rtl;
       text-align: center;
     }
 
-    .container {
+    .container, .thank-you {
       max-width: 400px;
       margin: auto;
       background: white;
       padding: 20px;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .container.active, .thank-you.active {
+      display: block;
     }
 
     img.logo {
-      max-width: 120px;
-      margin-bottom: 10px;
+      max-width: 110px;
+      margin-bottom: 20px;
     }
 
     .notice {
@@ -64,39 +68,42 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #256029;
-    }
-
     .note {
       font-size: 12px;
       color: #555;
+    }
+
+    .thank-msg {
+      background-color: #f2f2f2;
+      padding: 20px;
+      font-size: 18px;
+      border-top: 1px solid #ccc;
+      border-radius: 8px;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container active" id="formContainer">
   <img class="logo" src="https://i.ibb.co/SXtqDhpB/IMG-20250408-WA0004.jpg" alt="logo">
-
   <div class="notice">قبل تقديم الطلب، يرجى تحويل الأموال في غضون 10 دقائق باستخدام معلومات الدفع المحددة أدناه.</div>
 
-  <div class="copy-box" onclick="copyText('0603032807')">
-    رقم الهاتف: 0603032807
-  </div>
-  <div class="copy-box" onclick="copyText('SRV')">
-    السبب: SRV
-  </div>
+  <div class="copy-box" onclick="copyText('0603032807')">رقم الهاتف: 0603032807</div>
+  <div class="copy-box" onclick="copyText('SRV')">السبب: SRV</div>
 
   <input type="number" id="amount" placeholder="المبلغ">
   <input type="text" id="id" placeholder="الآيدي الخاص بك">
   <input type="text" id="phone" placeholder="رقم الهاتف الخاص بك">
   <input type="text" id="fullname" placeholder="الاسم الكامل">
   <input type="file" id="image" accept="image/*">
-
-  <p class="note">تنبيه: يرجى تحميل لقطة شاشة للتحويل المصرفي الناجح (.jpg, .jpeg, .png)</p>
-
+  <p class="note">يرجى تحميل لقطة شاشة للتحويل المصرفي الناجح (.jpg, .jpeg, .png)</p>
   <button onclick="submitForm()">التأكيد</button>
+</div>
+
+<div class="thank-you" id="thankYou">
+  <img class="logo" src="https://i.ibb.co/SXtqDhpB/IMG-20250408-WA0004.jpg" alt="logo">
+  <div class="thank-msg">تم إنشاء طلب الإيداع بنجاح.</div>
 </div>
 
 <script>
@@ -120,7 +127,6 @@
     const reader = new FileReader();
     reader.onload = function(e) {
       const imageBase64 = e.target.result;
-
       const formData = new FormData();
       formData.append("amount", amount);
       formData.append("id", id);
@@ -135,7 +141,8 @@
       .then(response => response.text())
       .then(result => {
         if (result.includes("تم")) {
-          window.location.href = "thanks.html";
+          document.getElementById("formContainer").classList.remove("active");
+          document.getElementById("thankYou").classList.add("active");
         } else {
           alert(result);
         }
