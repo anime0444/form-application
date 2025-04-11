@@ -40,7 +40,6 @@
       padding: 8px;
       margin: 8px 0;
       border-radius: 6px;
-      position: relative;
       cursor: pointer;
     }
 
@@ -95,7 +94,7 @@
   <input type="text" id="fullname" placeholder="الاسم الكامل">
   <input type="file" id="image" accept="image/*">
 
-  <p class="note">تنبيه: يرجى تحميل لقطة شاشة للتحويل المصرفي الناجح (.jpg, .jpeg, .png, .pdf)</p>
+  <p class="note">تنبيه: يرجى تحميل لقطة شاشة للتحويل المصرفي الناجح (.jpg, .jpeg, .png)</p>
 
   <button onclick="submitForm()">التأكيد</button>
 </div>
@@ -135,7 +134,11 @@
       })
       .then(response => response.text())
       .then(result => {
-        alert(result);
+        if (result.includes("تم")) {
+          window.location.href = "thanks.html";
+        } else {
+          alert(result);
+        }
       })
       .catch(error => {
         alert("حدث خطأ أثناء الإرسال: " + error);
